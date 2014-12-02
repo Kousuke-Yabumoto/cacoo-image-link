@@ -1,0 +1,10 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET     /select/:userName                       controllers.Images.selectAll(userName: String)
+GET     /image/:user/:diagramId/:sheetId        controllers.Images.show(user: String, diagramId: String, sheetId: String)
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.at(path="/public", file)

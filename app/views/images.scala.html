@@ -1,0 +1,12 @@
+@(images: Seq[Image])
+
+@main("画像リスト") {
+  <ul style="width: 100%;" class="container">
+  @for(image <- images) {
+    <li>
+      <img style="max-width: 200px; max-height: 200px;" src="@image.imageUrl" align="left" />
+      <label><a href="@image.imageUrl">@image.diagramTitle / @image.sheetName</a></label>
+    </li>
+  }
+  </ul>
+}

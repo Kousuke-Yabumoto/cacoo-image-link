@@ -1,4 +1,19 @@
-This is your new Play application
-=================================
+【Cacoo使いでWiki使いの方へのシステム】
+Cacooで図を作り、Wikiとかに貼付けるのがめんどくさかったので、CacooAPIを使って画像を取ってくるツールを作りました。
 
-This file will be packaged with your application, when using `activator dist`.
+[設定方法]
+まずは、application.confを下記のように編集し、cacooのAPIキーをつけてください。
+
+cacoo.user.(ユーザー名).apiKey=(APIキー)
+※ユーザー名は何でもいいです。
+
+[使い方]
+① 画像一覧にアクセス（hogeアカウントの場合）
+http://(サーバホスト名)/select/hoge
+② 適当な図を選んでリンクをコピー
+（こんな感じのリンクがコピーされます）
+http://(サーバホスト名)/image/show/hoge/XXXXXXXXXXX/YYYYYY
+③ URLを叩けば画像が見えます
+
+[アカウント追加したい場合]
+application.confにユーザー追加してください。

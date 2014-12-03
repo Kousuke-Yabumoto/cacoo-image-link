@@ -12,5 +12,6 @@ libraryDependencies ++= Seq(
   cache,
   ws,
   "com.propensive" %% "rapture-core" % "1.0.0",
-  "com.propensive" %% "rapture-json-play" % "1.0.8"
+  "com.propensive" %% "rapture-json-play" % "1.0.8",
+  "com.github.nscala-time" %% "nscala-time" % "1.2.0"
 )

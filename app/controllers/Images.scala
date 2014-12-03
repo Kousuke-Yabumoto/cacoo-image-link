@@ -19,4 +19,10 @@ object Images extends Controller {
       Ok (image).as("image/png")
     }
   }
+  
+  def update(user: String, diagramId: String, sheetId: String) = Action.async { implicit request => 
+    Image.updateImage(user, diagramId, sheetId) map { image => 
+      Ok (image).as("image/png")
+    }
+  }
 }

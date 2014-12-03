@@ -72,3 +72,15 @@ li a {
   font-weight: bold;
   font-size: 14px;
 }
+li div {
+	display: table;
+}
+li div div {
+	display: table-cell;
+	vertical-align: top;
+	text-align: left;
+	margin: 10px;
+}
+div.popup {
+	background-color: white;
+}

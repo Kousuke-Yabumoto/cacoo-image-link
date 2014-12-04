@@ -40,7 +40,9 @@ object ResponseParser {
 /**
  * API例外
  */
-class CacooException(code: Int, body: String) extends Exception(body)
+class CacooException(code: Int, body: String) extends Exception(body) {
+  def this(msg: String) = this(0, msg)
+}
 
 /**
  * CacooAPIへアクセスするクラス

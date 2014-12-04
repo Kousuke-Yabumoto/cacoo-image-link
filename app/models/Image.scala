@@ -9,8 +9,11 @@ import play.api.libs.ws.ning._
 import java.io._
 import scala.io._
 import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormatter
+import org.joda.time.format.DateTimeFormat
+import java.util.Locale
 
-case class Diagram(diagramId: String, ownerNickname: String, title: String)
+case class Diagram(diagramId: String, ownerNickname: String, title: String, updated: String)
 case class Sheet(name: String, uid: String, imageUrl: String)
 case class Image(user: String, diagramId: String, sheetId: String, ownerNickname: String, diagramTitle: String, sheetName: String, imageUrl: String, key: String)
 
@@ -18,10 +21,17 @@ object Image {
   
   def IMAGE_SAVE_PATH(user: String, diagramId: String, sheetId: String) = s"/var/cacoo/cache/${user}-${diagramId}-${sheetId}.png"
 
-  object diagramParser {
+  object diagramSeqParser {
     implicit val parser: ResponseParser[Seq[Diagram]] = ResponseParser { js =>
       val diagrams: Seq[Diagram] = js.result.as[Seq[Diagram]]
       diagrams
+    }
+  }
+  
+  object diagramParser {
+    implicit val parser: ResponseParser[Diagram] = ResponseParser { js =>
+      val diagram: Diagram = js.as[Diagram]
+      diagram
     }
   }
 
@@ -36,8 +46,16 @@ object Image {
    * 図の一覧を取得する
    */
   def diagramSeq(user: String): Future[Seq[Diagram]] = {
-    import diagramParser._
+    import diagramSeqParser._
     Cacoo(user).callJson("diagrams.json")()
+  }
+  
+  /**
+   * 図の情報を取得する
+   */
+  def diagram(user: String, diagramId: String): Future[Diagram] = {
+    import diagramParser._
+    Cacoo(user).callJson(s"diagrams/${diagramId}.json")()
   }
 
   /**
@@ -61,19 +79,33 @@ object Image {
     }
   }
   
+  
+  
   /**
    * 画像を取得する
    */
   def getImage(user: String, diagramId: String, sheetId: String) = {
-    future {
+    diagram(user, diagramId) map { diagram => 
       val file = new File(IMAGE_SAVE_PATH(user, diagramId, sheetId))
-      if (file.exists() && DateTime.now().minusMonths(1).getMillis() < file.lastModified()) {
-        Source.fromFile(file)(Codec.ISO8859).map(_.toByte).toArray
-      } else {
-        throw new IOException("ファイルが存在しないか有効期限が切れています")
-      }
+      val updated = DateTimeFormat.forPattern("EEE, dd MMM yyyy HH:mm:ss Z").withLocale(Locale.ENGLISH).parseDateTime(diagram.updated).getMillis()
+      (file, updated)
+    } recover {
+      // Cacooから取得出来ない場合は無視して現在のものを出す
+      case e: Throwable => (new File(IMAGE_SAVE_PATH(user, diagramId, sheetId)), 0L)
+    } filter { info =>
+      // ファイルの更新が無い
+      info._2 <= info._1.lastModified()
+    } filter { info => 
+      // ファイルが存在する
+      info._1.exists()
+    } filter { info => 
+      // 有効期限（１ヶ月）以上前のファイルじゃない
+      DateTime.now().minusMonths(1).getMillis() < info._1.lastModified()
+    } map { info => 
+      Source.fromFile(info._1)(Codec.ISO8859).map(_.toByte).toArray
     } recoverWith {
-      case ex: IOException => updateImage(user, diagramId, sheetId)
+      // ファイルが無かったり有効期限が切れたりしてたら更新
+      case ex: NoSuchElementException => updateImage(user, diagramId, sheetId)
     }
   }
   

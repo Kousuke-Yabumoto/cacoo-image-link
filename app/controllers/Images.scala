@@ -14,6 +14,12 @@ object Images extends Controller {
     }
   }
   
+  def preview(user: String, diagramId: String, sheetId: String) = Action.async { implicit request => 
+    Image.previewImage(user, diagramId, sheetId) map { image => 
+      Ok (image).as("image/png")
+    }
+  }
+  
   def show(user: String, diagramId: String, sheetId: String) = Action.async { implicit request => 
     Image.getImage(user, diagramId, sheetId) map { image => 
       Ok (image).as("image/png")

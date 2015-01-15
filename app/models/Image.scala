@@ -79,7 +79,22 @@ object Image {
     }
   }
   
-  
+  /**
+   * Cacooを毎回見に行かず、有効期限確認もせずに画像を取得する
+   */
+  def previewImage(user: String, diagramId: String, sheetId: String) = {
+    Future { 
+      new File(IMAGE_SAVE_PATH(user, diagramId, sheetId))
+    } filter { info => 
+      // ファイルが存在する
+      info.exists()
+    } map { info => 
+      Source.fromFile(info)(Codec.ISO8859).map(_.toByte).toArray
+    } recoverWith {
+      // ファイルが無かったら更新
+      case ex: NoSuchElementException => updateImage(user, diagramId, sheetId)
+    }
+  }
   
   /**
    * 画像を取得する

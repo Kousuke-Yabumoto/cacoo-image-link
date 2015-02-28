@@ -7,10 +7,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import models.Image
 
 object Images extends Controller {
+
+  def diagrams(userName: String) = Action.async { implicit request =>
+    Image.diagramSeq(userName).map { diagrams => Ok(views.html.diagrams(userName, diagrams)) }
+  }
   
-  def selectAll(userName: String) = Action.async { implicit request => 
-    Image.list(userName) map { images => 
-      Ok(views.html.images(images))
+  def selectAll(userName: String, diagramId: Option[String]) = Action.async { implicit request =>
+    Image.list(userName, diagramId) map { images =>
+      Ok(views.html.images(request.host, images))
     }
   }
   

@@ -1,0 +1,33 @@
+@(title: String)(content: Html)
+
+<!DOCTYPE html>
+<html>
+<head lang="ja">
+    <meta charset="UTF-8">
+    <title>@title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="@routes.Assets.at("jquery-ui/jquery-ui.min.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.simplesidebar.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/zero/ZeroClipboard.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.tinyTips.js")"></script>
+    <link rel="stylesheet" href="@routes.Assets.at("jquery-ui/jquery-ui.min.css")">
+    <link rel="stylesheet" href="@routes.Assets.at("jquery-ui/jquery-ui.structure.min.css")">
+    <link rel="stylesheet" href="@routes.Assets.at("jquery-ui/jquery-ui.theme.min.css")">
+    <style>
+      .content {
+	    width: 400px;
+	    height: 200px;
+	    border: 1px solid lightgray;
+	    padding: 10px 10px 10px 10px;
+	    margin: 5px 5px 5px 5px;
+	    float: left;
+      }
+      .lightTip {
+        padding-left: 10px;
+      }
+    </style>
+</head>
+<body>
+@content
+</body>
+</html>

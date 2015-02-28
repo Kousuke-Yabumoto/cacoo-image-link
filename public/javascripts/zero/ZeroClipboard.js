@@ -159,12 +159,13 @@
  * @private
  */
   var _getDirPathOfUrl = function(url) {
-    var dir;
-    if (typeof url === "string" && url) {
-      dir = url.split("#")[0].split("?")[0];
-      dir = url.slice(0, url.lastIndexOf("/") + 1);
-    }
-    return dir;
+//    var dir;
+//    if (typeof url === "string" && url) {
+//      dir = url.split("#")[0].split("?")[0];
+//      dir = url.slice(0, url.lastIndexOf("/") + 1);
+//    }
+//    return dir;
+      return "/assets/javascripts/zero/"
   };
   /**
  * Get the current script's URL by throwing an `Error` and analyzing it.

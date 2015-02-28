@@ -1,0 +1,49 @@
+@(userName: String, diagrams: Seq[Diagram])
+
+@import views.helper.TextHelper._
+
+@default("Cacoo 図一覧") {
+  <script type="text/javascript">
+    function show(diagramId) {
+      $.get("@{routes.Images.selectAll(userName)}", {diagramId: diagramId}, function(res) {
+        $('#main-content').html(res);
+      });
+    }
+  </script>
+  <style type="text/css">
+    .sidebar {
+      width: 300px;
+      float: left;
+      background-color:#696969;
+      padding: 0;
+      font-size: 0.8em;
+    }
+    .contents {
+      float: left;
+      width: 950px;
+    }
+    #feedback { font-size: 1.4em; }
+    #selectable { background: #696969; color:white; }
+    #selectable .ui-selecting { background: #fff2e5; color:white; }
+    #selectable { list-style-type: none; margin: 0; padding: 0; width: 100%; }
+    #selectable li { margin: 3px; padding: 0.4em; font-size: 1.4em; height: 25px; }
+  </style>
+  <script type="text/javascript">
+    $("#selectable").selectable();
+  </script>
+  <!-- サイドメニュー -->
+  <div id="diagram-list" class="sidebar">
+    <ul id="selectable">
+      @for(diagram <- diagrams) {
+        <li id="menu-@{diagram.diagramId}" class="ui-widget-content"><a href="#" onclick="show('@diagram.diagramId')">@diagram.title.cut(15)</a></li>
+        <script type="text/javascript">
+          $(function(){
+            $('#menu-@{diagram.diagramId}').tinyTips('light', '<div class="popup">@diagram.title<br>制作者：@diagram.ownerNickname</div>');
+          });
+        </script>
+      }
+    </ul>
+  </div>
+  <!-- メインコンテンツ -->
+  <div id="main-content" class="contents">メニューから図を選択してください</div>
+}

@@ -23,8 +23,13 @@ object Image {
 
   object diagramSeqParser {
     implicit val parser: ResponseParser[Seq[Diagram]] = ResponseParser { js =>
-      val diagrams: Seq[Diagram] = js.result.as[Seq[Diagram]]
-      diagrams
+      if (js.result.toString == "undefined") {
+        val diagram: Diagram = js.as[Diagram]
+        Seq(diagram)
+      } else {
+        val diagrams: Seq[Diagram] = js.result.as[Seq[Diagram]]
+        diagrams
+      }
     }
   }
   
@@ -45,9 +50,11 @@ object Image {
   /**
    * 図の一覧を取得する
    */
-  def diagramSeq(user: String): Future[Seq[Diagram]] = {
+  def diagramSeq(user: String, diagramId: Option[String] = None): Future[Seq[Diagram]] = {
     import diagramSeqParser._
-    Cacoo(user).callJson("diagrams.json")()
+    diagramId.fold(Cacoo(user).callJson("diagrams.json")()) { id =>
+      Cacoo(user).callJson(s"diagrams/$id.json")()
+    }
   }
   
   /**
@@ -69,7 +76,7 @@ object Image {
   /**
    * Imageリストを取得する
    */
-  def list(user: String): Future[Seq[Image]] = diagramSeq(user) map { diagrams =>
+  def list(user: String, diagramId: Option[String]): Future[Seq[Image]] = diagramSeq(user, diagramId) map { diagrams =>
     diagrams flatMap { diagram =>
       val futureImages: Future[Seq[Sheet]] = sheetSeq(user, diagram.diagramId)
       val sheets = Await.result(futureImages, Duration.Inf)

@@ -1,20 +1,15 @@
-@(images: Seq[Image]) @main("画像リスト") {
-<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-<script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.tinyTips.js")"></script>
-<script type="text/javascript" src="@routes.Assets.at("javascripts/zero/ZeroClipboard.min.js")"></script>
+@(host: String, images: Seq[Image])
+@default("画像リスト") {
 <script>
-	function updateImage(key, url) {
-		$("#img-" + key).attr("src", url);
-	}
-	$(function(){
-		// クリップボード
-		var clip = new ZeroClipboard($(".clipcopy"));
-	});
+  function updateImage(key, url) {
+    $("#img-" + key).attr("src", url);
+  }
+  // クリップボード
+  var clip = new ZeroClipboard($(".clipcopy"));
 </script>
 <ul style="width: 100%;" class="container">
   @for(image <- images) {
-  <li>
-    <div>
+    <div class="content">
       <div>
         <img id="img-@{image.key}" style="max-width: 180px; max-height: 180px;" src="@{image.imageUrl}" align="left" />
       </div>
@@ -22,12 +17,7 @@
         <label><a href="@{image.imageUrl}">@{image.diagramTitle} / @{image.sheetName}</a></label>
       </div>
       <div>
-        <script type="text/javascript">
-          {
-        	  var url = 'http://' + location.host + '@{image.imageUrl}'
-        	  document.write('<input type="hidden" id="link-@{image.key}" value="' + url + '" />');
-          }
-        </script>
+        <input type="hidden" id="link-@{image.key}" value="http://@{host}@{image.imageUrl}" />
         <input type="button" class="clipcopy" value="リンクコピー" data-clipboard-target="link-@{image.key}" />
       </div>
       <div>
@@ -39,7 +29,6 @@
     	  $('#img-' + '@{image.key}').tinyTips('yellow', '<div class="popup"><img src="@{image.imageUrl}" /></div>');
       });
     </script>
-  </li> 
   }
 </ul>
 }
